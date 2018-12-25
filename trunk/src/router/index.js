@@ -15,6 +15,8 @@ import SysUserChangePwd from '../components/sys/SysUserChangePwd.vue'
 //用户列表
 import UserInfoList from '../components/web/UserInfoList.vue'
 import NewsList from '../components/news/NewsList.vue'
+import SpiderKeyList from '../components/news/SpiderKeyList.vue'
+import SpiderLogList from '../components/news/SpiderLogList.vue'
 
 
 Vue.use(Router)
@@ -39,6 +41,8 @@ export default new Router({
                 {path: '/sysRoleResourceList/:roleId/:roleName',component: SysRoleResourceList,name: '设置权限',hidden: true},
                 {path: '/sysUserChangePwd', component: SysUserChangePwd, name: '修改密码', hidden: true},
                 {path: '/news', component: NewsList, name: '新闻列表'},
+                {path: '/spiderKey', component: SpiderKeyList, name: '爬虫关键字'},
+                {path: '/spiderLog', component: SpiderLogList, name: '爬虫日志'},
             ]
         },
     ]

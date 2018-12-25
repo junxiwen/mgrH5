@@ -3,16 +3,6 @@
         <!--工具条-->
         <el-col :span="24" class="toolbar">
             <el-form :inline="true" :model="filterForm" label-width="80px" ref="filterForm">
-                <el-form-item label="标题" prop="content">
-                    <el-input v-model="filterForm.content" placeholder="模糊查询标题"></el-input>
-                </el-form-item>
-                <el-form-item label="状态" prop="status">
-                    <el-select v-model="filterForm.status" clearable placeholder="请选择新闻状态">
-                        <el-option label="正常" value="0"></el-option>
-                        <el-option label="失效" value="1"></el-option>
-                    </el-select>
-                </el-form-item>
-
                 <el-form-item>
                     <el-button type="primary" @click="handleSearch">查询</el-button>
                     <el-button @click="handleReset">重置</el-button>
@@ -22,54 +12,30 @@
         </el-col>
 
         <!--表格-->
-        <el-table :data="arrList" size="medium" stripe highlight-current-row v-loading="loading"
-                  @sort-change="handleSort"
-                  style="width: 100%;">
-            <el-table-column prop="id" label="id" width="150px" sortable fixed="left"/>
-            <el-table-column prop="title" label="标题"/>
-            <el-table-column prop="url" label="url">
-                <template slot-scope="scope">
-                    <a :href="scope.row.url" target="_blank">{{scope.row.url}}</a>
-                </template>
-            </el-table-column>
-            <el-table-column prop="content" label="备注"/>
-            <el-table-column prop="status" label="状态" sortable>
-                <template slot-scope="scope">
-                    <el-tag :type="scope.row.status == 0 ? 'primary' : 'danger'" circle>
-                        {{scope.row.status2 }}
-                    </el-tag>
-                </template>
-            </el-table-column>
-            <el-table-column prop="insertTime" label="时间"/>
+        <el-table :data="arrList" size="medium" stripe highlight-current-row v-loading="loading" @sort-change="handleSort" style="width: 100%;">
+            <el-table-column prop="id" label="id" width="150px" sortable fixed="left"></el-table-column>
+            <el-table-column prop="spiderKey" label="关键字" :show-overflow-tooltip="true"></el-table-column>
+            <el-table-column prop="insertTime" label="记录时间" :show-overflow-tooltip="true" ></el-table-column>
             <el-table-column label="操作" fixed="right">
                 <template slot-scope="scope">
-                    <el-button :type="scope.row.status == 0 ? 'danger' : 'primary'" size="mini"
-                               @click="handleUpdate(scope.row)">{{scope.row.status === 0 ? '设为失效' : '设为正常'}}</el-button>
+                    <el-button @click="deleteById(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
 
         <!--分页工具条-->
         <el-col :span="24" class="toolbar">
-            <el-pagination layout="sizes, prev, pager, next,total" @current-change="handleCurrentChange"
-                           @size-change="handleSizeChange"
-                           :current-page.sync='page' :page-size="pageSize" :page-sizes="pageSizes" :total="total"
-                           style="float:right;">
+            <el-pagination layout="sizes, prev, pager, next,total" @current-change="handleCurrentChange" @size-change="handleSizeChange"
+                           :current-page.sync='page' :page-size="pageSize" :page-sizes="pageSizes" :total="total" style="float:right;">
             </el-pagination>
         </el-col>
 
 
-        <!--新增新闻-->
+        <!--新增pid-->
         <el-dialog :title="editFormTitle" :visible.sync="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editForm" label-width="80px" ref="editForm" :rules="editFormRules">
-                <el-form-item label="标题" prop="title">
-                    <el-input v-model="editForm.title"/>
-                </el-form-item>
-                <el-form-item label="url" prop="url">
-                    <el-input v-model="editForm.url"/>
-                </el-form-item>
-                <el-form-item label="备注" prop="content">
-                    <el-input v-model="editForm.content"/>
+                <el-form-item label="关键字" prop="spiderKey">
+                    <el-input v-model="editForm.spiderKey"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -81,7 +47,7 @@
 </template>
 
 <script>
-    import {URI_NEWS_LIST, URI_NEWS_ADD,URI_NEWS_UPDATE} from '../../const/uri';
+    import {URI_SPIDER_KEY,URI_SPIDER_KEY_ADD,URI_SPIDER_KEY_DEL} from '../../const/uri';
     export default {
         data() {
             return {
@@ -97,18 +63,12 @@
                 editFormVisible: false,//编辑界面是否显示
                 editLoading: false,
                 editForm: {},
-                editFormTitle: '',
+                editFormTitle:'',
                 editFormRules: {
-//                    id: [
-//                        {required: true, message: '请输入用户id', trigger: 'blur'}
-//                    ],
-//                    code: [
-//                        {required: true, message: '请输入邀请码', trigger: 'blur'}
-//                    ],
-//                    name: [
-//                        {required: true, message: '请输入姓名', trigger: 'blur'}
-//                    ]
-                }
+                    spiderKey: [
+                        {required: true, message: '请输入关键字', trigger: 'blur'}
+                    ],
+                },
             }
         },
         mounted() {
@@ -117,12 +77,12 @@
         methods: {
             //获取列表
             initData() {
-                this.$http.post(URI_NEWS_LIST, {
-                    reqPage: this.page,
-                    reqPageSize: this.pageSize,
-                    ...this.filterForm,
-                    reqOrderName: this.orderName,
-                    reqOrderType: this.orderType
+                this.$http.post(URI_SPIDER_KEY, {
+                        reqPage: this.page,
+                        reqPageSize: this.pageSize,
+                        ...this.filterForm,
+                        reqOrderName: this.orderName,
+                        reqOrderType: this.orderType
                 }).then((res) => {
                     this.arrList = res.data.data.data;
                     this.total = res.data.data.total;
@@ -169,10 +129,27 @@
                 this.editFormTitle = '新增';
                 this.editFormVisible = true;
             },
+            //删除
+            deleteById(row) {
+                this.$confirm('确定删除吗？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$http.get(URI_SPIDER_KEY_DEL + '/' + row.id).then((res) => {
+                        this.$message.success(res.data.message);
+                        this.initData();
+                    }).catch((error) => {
+                        this.loading = false;
+                    });
+                }).catch(() => {
+                    //已取消删除
+                });
+            },
             editSubmit(){
                 this.$refs.editForm.validate((valid) => {
                     if (valid) {
-                        this.$http.post(URI_NEWS_ADD, {
+                        this.$http.post(URI_SPIDER_KEY_ADD ,{
                             ...this.editForm
                         }).then((res) => {
                             this.$message.success(res.data.message);
@@ -183,19 +160,6 @@
                     } else {
                         this.$message.error('表单验证失败!');
                     }
-                });
-            },
-            handleUpdate(row) {
-                this.$http.get(URI_NEWS_UPDATE + '/' + row.id, {
-
-                }).then((res) => {
-                    this.$message({
-                        type: 'success',
-                        message: '更新成功!'
-                    });
-                    this.initData();
-                }).catch((error) => {
-                    this.loading = false;
                 });
             },
             closeDialog(){

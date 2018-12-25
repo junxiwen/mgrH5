@@ -20,4 +20,8 @@ export const URI_MODIFYUSER = URI_BASE + '/userInfo/modifyUserNickName';
 export const URI_NEWS_LIST = URI_BASE + '/news';
 export const URI_NEWS_ADD = URI_BASE + '/news/add';
 export const URI_NEWS_UPDATE = URI_BASE + '/news/update';
+export const URI_SPIDER_KEY = URI_BASE + '/spiderKey';
+export const URI_SPIDER_KEY_ADD = URI_BASE + '/spiderKey/add';
+export const URI_SPIDER_KEY_DEL = URI_BASE + '/spiderKey/del';
+export const URI_SPIDER_LOG = URI_BASE + '/spiderLog';
 
