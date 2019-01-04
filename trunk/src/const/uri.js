@@ -24,4 +24,7 @@ export const URI_SPIDER_KEY = URI_BASE + '/spiderKey';
 export const URI_SPIDER_KEY_ADD = URI_BASE + '/spiderKey/add';
 export const URI_SPIDER_KEY_DEL = URI_BASE + '/spiderKey/del';
 export const URI_SPIDER_LOG = URI_BASE + '/spiderLog';
+export const URI_ARTICLE = URI_BASE + '/article';
+export const URI_ARTICLE_ADD_UPDATE = URI_BASE + '/article/addOrUpdate';
+export const URI_ARTICLE_DEL = URI_BASE + '/article/del';
 

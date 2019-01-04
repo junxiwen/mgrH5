@@ -17,6 +17,7 @@ import UserInfoList from '../components/web/UserInfoList.vue'
 import NewsList from '../components/news/NewsList.vue'
 import SpiderKeyList from '../components/news/SpiderKeyList.vue'
 import SpiderLogList from '../components/news/SpiderLogList.vue'
+import ArticleList from '../components/news/ArticleList.vue'
 
 
 Vue.use(Router)
@@ -43,6 +44,7 @@ export default new Router({
                 {path: '/news', component: NewsList, name: '新闻列表'},
                 {path: '/spiderKey', component: SpiderKeyList, name: '爬虫关键字'},
                 {path: '/spiderLog', component: SpiderLogList, name: '爬虫日志'},
+                {path: '/article', component: ArticleList, name: '文摘'},
             ]
         },
     ]
